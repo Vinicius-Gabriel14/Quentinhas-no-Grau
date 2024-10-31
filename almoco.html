@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marmitas no Grau - Almoço</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Marmitas no Grau</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="almoco.html">Almoço</a></li>
+                <li><a href="jantar.html">Jantar</a></li>
+                <li><a href="bebida.html">Bebida</a></li>
+                <li><a href="sobremesa.html">Sobremesa</a></li>
+                <li><a href="carrinho.html">Carrinho</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Almoço</h2>
+        <ul>
+            <li>Arroz com Frango - R$ 15,00 <button onclick="addToCart('Arroz com Frango', 15)">Adicionar ao Carrinho</button>
+                <p>Arroz soltinho acompanhado de frango grelhado e temperos especiais.</p></li>
+            
+            <li>Feijão Tropeiro - R$ 12,00 <button onclick="addToCart('Feijão Tropeiro', 12)">Adicionar ao Carrinho</button> 
+                <p>Feijão delicioso com torresmo, linguiça e especiarias.</p></li>
+           
+            <li>Salada de Quinoa - R$ 18,00 <button onclick="addToCart('Salada de Quinoa', 18)">Adicionar ao Carrinho</button>
+                <p>Quinoa fresca com vegetais variados e molho de limão.</p></li>
+            
+            <li>Frango Grelhado - R$ 20,00 <button onclick="addToCart('Frango Grelhado', 20)">Adicionar ao Carrinho</button>
+                <p>Peito de frango grelhado, suculento e temperado com ervas.</p></li>
+            
+            <li>Strogonoff de Carne - R$ 25,00 <button onclick="addToCart('Strogonoff de Carne', 25)">Adicionar ao Carrinho</button>
+                <p>Carne macia em molho cremoso de champignon e temperos.</p></li>
+            
+            <li>Peixe Assado - R$ 22,00 <button onclick="addToCart('Peixe Assado', 22)">Adicionar ao Carrinho</button>
+                <p>Peixe fresco assado com ervas e limão, acompanhado de legumes.</p></li>
+        </ul>
+
+        <h3>Carrinho</h3>
+        <ul id="cart"></ul>
+        <div id="total">Total: R$ 0.00</div>
+        <button onclick="clearCart()">Limpar Carrinho</button>
+    </main>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let total = parseFloat(localStorage.getItem('total')) || 0;
+
+        function addToCart(item, price) {
+            if (!item || price <= 0) {
+                alert('Por favor, insira um item válido e um preço positivo.');
+                return;
+            }
+
+            const existingProduct = cart.find(product => product.item === item);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+                existingProduct.price += price;
+            } else {
+                cart.push({ item, price, quantity: 1 });
+            }
+
+            total += price;
+            updateCart();
+            saveCart();
+            alert(`${item} adicionado ao carrinho!`);
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cart');
+            cartList.innerHTML = '';
+            cart.forEach((product, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${product.item} - R$ ${product.price.toFixed(2)} (Quantidade: ${product.quantity})`;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remover';
+                removeButton.onclick = () => removeFromCart(index);
+
+                li.appendChild(removeButton);
+                cartList.appendChild(li);
+            });
+            document.getElementById('total').textContent = `Total: R$ ${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            total -= cart[index].price;
+            cart.splice(index, 1);
+            updateCart();
+            saveCart();
+            alert('Produto removido do carrinho!');
+        }
+
+        function clearCart() {
+            cart = [];
+            total = 0;
+            updateCart();
+            saveCart();
+            alert('Carrinho limpo!');
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('total', total);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('cart')) {
+                updateCart();
+            }
+        });
+    </script>
+</body>
+</html>

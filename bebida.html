@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marmitas no Grau - Bebida</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body> 
+    <header>
+        <h1>Marmitas no Grau</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="almoco.html">Almoço</a></li>
+                <li><a href="jantar.html">Jantar</a></li>
+                <li><a href="bebida.html">Bebida</a></li>
+                <li><a href="sobremesa.html">Sobremesa</a></li>
+                <li><a href="carrinho.html">Carrinho</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Bebida</h2>
+        <ul>
+            <li>Suco de Laranja - R$ 5,00 <button onclick="addToCart('Suco de Laranja', 5)">Adicionar ao Carrinho</button></li>
+            <li>Refrigerante - R$ 4,00 <button onclick="addToCart('Refrigerante', 4)">Adicionar ao Carrinho</button>
+                <p>Coca-cola</p>
+            </li>
+            <li>Água Mineral - R$ 3,00 <button onclick="addToCart('Água Mineral', 3)">Adicionar ao Carrinho</button></li>
+            <li>Chá Gelado - R$ 6,00 <button onclick="addToCart('Chá Gelado', 6)">Adicionar ao Carrinho</button></li>
+            <li>Cerveja - R$ 10,00 <button onclick="addToCart('Cerveja Artesanal', 10)">Adicionar ao Carrinho</button></li>
+            <li>Vinho - R$ 25,00 <button onclick="addToCart('Vinho', 25)">Adicionar ao Carrinho</button>
+                <p>Pergola</p>
+            </li>
+        </ul>
+
+        <h3>Carrinho</h3>
+        <ul id="cart"></ul>
+        <div id="total">Total: R$ 0.00</div>
+        <button onclick="clearCart()">Limpar Carrinho</button>
+    </main>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let total = parseFloat(localStorage.getItem('total')) || 0;
+
+        function addToCart(item, price) {
+            if (!item || price <= 0) {
+                alert('Por favor, insira um item válido e um preço positivo.');
+                return;
+            }
+
+            const existingProduct = cart.find(product => product.item === item);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+                existingProduct.price += price;
+            } else {
+                cart.push({ item, price, quantity: 1 });
+            }
+
+            total += price;
+            updateCart();
+            saveCart();
+            alert(`${item} adicionado ao carrinho!`);
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cart');
+            cartList.innerHTML = '';
+            cart.forEach((product, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${product.item} - R$ ${product.price.toFixed(2)} (Quantidade: ${product.quantity})`;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remover';
+                removeButton.onclick = () => removeFromCart(index);
+
+                li.appendChild(removeButton);
+                cartList.appendChild(li);
+            });
+            document.getElementById('total').textContent = `Total: R$ ${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            total -= cart[index].price;
+            cart.splice(index, 1);
+            updateCart();
+            saveCart();
+            alert('Produto removido do carrinho!');
+        }
+
+        function clearCart() {
+            cart = [];
+            total = 0;
+            updateCart();
+            saveCart();
+            alert('Carrinho limpo!');
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('total', total);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('cart')) {
+                updateCart();
+            }
+        });
+    </script>
+</body>
+</html>
